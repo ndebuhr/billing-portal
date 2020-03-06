@@ -15,6 +15,9 @@ node {
         dir("billing-service") {
           sh "docker build --no-cache -t ${BUILDREGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER ."
         }
+        dir("api") {
+          sh "docker build --no-cache -t ${BUILDREGISTRY}/billing-portal/api:1.0.$BUILD_NUMBER ."
+        }
       }
    }
    stage('Zip DB Scripts') {
@@ -30,6 +33,7 @@ node {
         sh 'echo "${DOCKERPASSWORD}" | docker login -u ${DOCKERUSER} --password-stdin https://${BUILDREGISTRY}'
         sh 'docker push ${BUILDREGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER'
         sh 'docker push ${BUILDREGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER'
+        sh 'docker push ${BUILDREGISTRY}/billing-portal/api:1.0.$BUILD_NUMBER'
       }
    }
    stage('Setup Deployment Package') {
@@ -41,8 +45,9 @@ node {
    }
    stage('Docker Cleanup') {
       withEnv(["DOCKER_HOST=${DOCKERHOST}"]) {
-        sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER'
         sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER'
+        sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER'
+        sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/api:1.0.$BUILD_NUMBER'
       }
    }
 }
