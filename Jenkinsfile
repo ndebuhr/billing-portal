@@ -2,6 +2,7 @@ node {
    stage('Preparation') {
       deleteDir()
       git '${REPO}'
+      sh "git checkout ${BRANCH}"
       sh "git submodule update --init --recursive"
    }
    stage('Build') {
