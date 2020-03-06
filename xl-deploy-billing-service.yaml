@@ -63,7 +63,7 @@ spec:
         replicasCount: "1"
       - name: jboss-payments-module
         type: jbossdm.War
-        contextRoot: payments
+        contextRoot: "{{ CONTEXT_ROOT }}"
         file: !file "payments/payment-cdi-event/target/payment-cdi-event.war"
 ---
 apiVersion: xl-deploy/v1
