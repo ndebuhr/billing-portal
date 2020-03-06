@@ -30,7 +30,7 @@ spec:
         - name: caddy
           type: k8s.ContainerSpec
           containerName: caddy
-          image: !format "%REGISTRY%/billing-portal/static-site:1.0.%BUILD_NUMBER%"
+          image: !format "%DEPLOYMENTREGISTRY%/billing-portal/static-site:1.0.%BUILD_NUMBER%"
         podCreateDeleteRetryCount: "20"
         labels:
           application: static-site
@@ -54,7 +54,7 @@ spec:
         - name: api
           type: k8s.ContainerSpec
           containerName: api
-          image: !format "%REGISTRY%/billing-portal/api:1.0.%BUILD_NUMBER%"
+          image: !format "%DEPLOYMENTREGISTRY%/billing-portal/api:1.0.%BUILD_NUMBER%"
         podCreateDeleteRetryCount: "20"
         labels:
           application: api

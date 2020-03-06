@@ -10,10 +10,10 @@ node {
           sh "mvn clean install"
         }
         dir("haproxy") {
-          sh "docker build --no-cache -t ${REGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER ."
+          sh "docker build --no-cache -t ${BUILDREGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER ."
         }
         dir("billing-service") {
-          sh "docker build --no-cache -t ${REGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER ."
+          sh "docker build --no-cache -t ${BUILDREGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER ."
         }
       }
    }
@@ -27,22 +27,22 @@ node {
    }
    stage('Push') {
       withEnv(["DOCKER_HOST=${DOCKERHOST}"]) {
-        sh 'echo "${DOCKERPASSWORD}" | docker login -u ${DOCKERUSER} --password-stdin https://${REGISTRY}'
-        sh 'docker push ${REGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER'
-        sh 'docker push ${REGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER'
+        sh 'echo "${DOCKERPASSWORD}" | docker login -u ${DOCKERUSER} --password-stdin https://${BUILDREGISTRY}'
+        sh 'docker push ${BUILDREGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER'
+        sh 'docker push ${BUILDREGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER'
       }
    }
    stage('Setup Deployment Package') {
        sh 'chmod +x ./xlw'
-       sh './xlw apply -v --values BUILD_NUMBER=$BUILD_NUMBER,REGISTRY=${REGISTRY} --xl-deploy-url ${XLDHOST} --xl-deploy-username ${XLDUSER} --xl-deploy-password ${XLDPASSWORD} -f xl-deploy-billing-service.yaml'
+       sh './xlw apply -v --values BUILD_NUMBER=$BUILD_NUMBER,DEPLOYMENTREGISTRY=${DEPLOYMENTREGISTRY} --xl-deploy-url ${XLDHOST} --xl-deploy-username ${XLDUSER} --xl-deploy-password ${XLDPASSWORD} -f xl-deploy-billing-service.yaml'
    }
    stage('Archive Artifacts') {
       archiveArtifacts artifacts: 'payments/payment-cdi-event/target/payment-cdi-event.war, mongodb/scripts.zip', fingerprint: true
    }
    stage('Docker Cleanup') {
       withEnv(["DOCKER_HOST=${DOCKERHOST}"]) {
-        sh 'docker rmi -f ${REGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER'
-        sh 'docker rmi -f ${REGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER'
+        sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER'
+        sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER'
       }
    }
 }
