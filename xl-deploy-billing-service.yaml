@@ -23,7 +23,8 @@ spec:
         - name: http
           type: k8s.ServicePortSpec
           portName: http
-          port: "80"
+          port: "8082"
+          targetPort: "80"
       - name: static-site-frontend-pods
         type: k8s.DeploymentSpec
         containers:
