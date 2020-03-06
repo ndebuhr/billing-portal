@@ -4,7 +4,7 @@ kind: Applications
 spec:
 - directory: Applications/PortfolioA35
   children:
-  - name: Applications/BillingPortal-App
+  - name: BillingPortal-App
     type: udm.Application
     lastVersion: !format 1.0.%BUILD_NUMBER%
     children:
@@ -71,7 +71,7 @@ kind: Applications
 spec:
 - directory: Applications/PortfolioA35
   children:
-  - name: Applications/BillingPortal-Data
+  - name: BillingPortal-Data
     type: udm.Application
     lastVersion: !format 1.0.%BUILD_NUMBER%
     children:
