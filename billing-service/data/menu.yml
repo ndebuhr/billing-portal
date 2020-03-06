@@ -1,0 +1,8 @@
+- item: Estimates and Invoices
+  url: "/post/estimates-and-invoices"
+- item: Expenses
+  url: "/post/expenses"
+- item: Payments
+  url: "/post/payments"
+- item: Reports
+  url: "/post/reports"

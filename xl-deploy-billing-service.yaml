@@ -1,0 +1,79 @@
+---
+apiVersion: xl-deploy/v1
+kind: Applications
+spec:
+- name: Applications/BillingPortal-App
+  type: udm.Application
+  lastVersion: !format 1.0.%BUILD_NUMBER%
+  children:
+  - name: !format 1.0.%BUILD_NUMBER%
+    type: udm.DeploymentPackage
+    applicationDependencies:
+      BillingPortal-Data: !format 1.0.%BUILD_NUMBER%
+    deployables:
+    - name: static-site-frontend-service
+      type: k8s.ServiceSpec
+      serviceName: static-site
+      serviceType: ClusterIP
+      selectors:
+        application: static-site
+      ports:
+      - name: http
+        type: k8s.ServicePortSpec
+        portName: http
+        port: "80"
+    - name: static-site-frontend-pods
+      type: k8s.DeploymentSpec
+      containers:
+      - name: caddy
+        type: k8s.ContainerSpec
+        containerName: caddy
+        image: !format "%REGISTRY%/billing-portal/static-site:1.0.%BUILD_NUMBER%"
+      podCreateDeleteRetryCount: "20"
+      labels:
+        application: static-site
+      restartPolicy: Always
+      deploymentName: static-site
+      replicasCount: "1"
+    - name: api-backend-service
+      type: k8s.ServiceSpec
+      serviceName: api
+      serviceType: ClusterIP
+      selectors:
+        application: api
+      ports:
+      - name: http
+        type: k8s.ServicePortSpec
+        portName: http
+        port: "80"
+    - name: api-backend-pods
+      type: k8s.DeploymentSpec
+      containers:
+      - name: api
+        type: k8s.ContainerSpec
+        containerName: api
+        image: !format "%REGISTRY%/billing-portal/api:1.0.%BUILD_NUMBER%"
+      podCreateDeleteRetryCount: "20"
+      labels:
+        application: api
+      restartPolicy: Always
+      deploymentName: api
+      replicasCount: "1"
+    - name: jboss-payments-module
+      type: jbossdm.War
+      contextRoot: payments
+      file: !file "payments/payment-cdi-event/target/payment-cdi-event.war"
+---
+apiVersion: xl-deploy/v1
+kind: Applications
+spec:
+- name: Applications/BillingPortal-Data
+  type: udm.Application
+  lastVersion: !format 1.0.%BUILD_NUMBER%
+  children:
+  - name: !format 1.0.%BUILD_NUMBER%
+    type: udm.DeploymentPackage
+    deployables:
+    - name: database-update-scripts
+      type: sql.SqlScripts
+      file: !file "sql/sql-scripts.zip"

@@ -1,0 +1,6 @@
+[submodule "payments"]
+	path = payments
+	url = https://github.com/jboss-developer/jboss-eap-quickstarts.git
+[submodule "billing-service/themes/hugo-swift-theme"]
+	path = billing-service/themes/hugo-swift-theme
+	url = https://github.com/onweru/hugo-swift-theme.git

@@ -1,0 +1,11 @@
+<div id="help-modal"></div>
+<footer class = 'footer'>
+  <div class = 'footer_inner wrap pale'>
+    <p class="left">{{ .Site.Params.footer_content }}</p>
+    <p id="help-footer" class="center"></p>
+    <p class="right">&copy;&nbsp;<span class = 'year'></span>&nbsp;{{ .Site.Params.copyright }}</p>
+  </div>
+</footer>
+{{- $mainScriptPath := "js/index.js" }}
+{{- $scripts := resources.Get $mainScriptPath | resources.ExecuteAsTemplate $mainScriptPath . | resources.Minify | resources.Fingerprint "sha512" }}
+<script src = '{{ $scripts.Permalink }}'></script>

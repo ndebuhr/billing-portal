@@ -1,0 +1,7 @@
+0.0.0.0:80
+browse
+tls off
+log / syslog+udp://logstash:1514 "{combined}"
+realip {
+    from 0.0.0.0/0
+}

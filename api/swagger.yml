@@ -1,0 +1,71 @@
+swagger: "2.0"
+schemes:
+- http
+produces:
+- application/json
+consumes:
+- application/json
+info:
+  title: billing portal
+  description: billing portal api
+  version: 1.0.0
+basePath: /api
+paths:
+  /expenses:
+    get:
+      operationId: getExpenses
+      parameters:
+      - name: size
+        in: query
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 25
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/expenses"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+    post:
+      operationId: addExpense
+      parameters:
+      - name: expense
+        in: body
+        required: true
+        schema:
+          $ref: "#/definitions/expense"
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/expense"
+        default:
+          description: error
+          schema:
+            $ref: "#/definitions/error"
+definitions:
+  expenses:
+    type: array
+    items:
+      $ref: '#/definitions/expense'
+  expense:
+    type: object
+    properties:
+      amount:
+        type: number
+      currency:
+        type: string
+        minLength: 1
+      reason:
+        type: string
+        minLength: 1
+  error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int64

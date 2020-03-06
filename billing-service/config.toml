@@ -1,0 +1,12 @@
+languageCode = "en-us"
+theme = "hugo-swift-theme"
+title = "XebiaLabs"
+canonifyurls = true
+paginate = 4
+
+[params]
+    custom_css = ["css/styles.css"]
+    designed_by = "Example"
+    copyright = "XebiaLabs"
+    footer_content = "Powered by the XebiaLabs DevOps Platform"
+    headline = "XebiaLabs Billing Service"
