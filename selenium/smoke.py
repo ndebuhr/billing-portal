@@ -16,7 +16,7 @@ class PythonOrgSearch(unittest.TestCase):
         driver.get("http://static-site")
 
     def tearDown(self):
-        self.driver.close()
+        self.driver.quit()
 
 
 if __name__ == "__main__":
