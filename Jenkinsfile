@@ -19,6 +19,9 @@ node {
         dir("api") {
           sh "docker build --no-cache -t ${BUILDREGISTRY}/billing-portal/api:1.0.$BUILD_NUMBER ."
         }
+        dir("logstash") {
+          sh "docker build --no-cache -t ${BUILDREGISTRY}/billing-portal/logstash:1.0.$BUILD_NUMBER ."
+        }
       }
    }
    stage('Zip DB Scripts') {
@@ -35,6 +38,7 @@ node {
         sh 'docker push ${BUILDREGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER'
         sh 'docker push ${BUILDREGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER'
         sh 'docker push ${BUILDREGISTRY}/billing-portal/api:1.0.$BUILD_NUMBER'
+        sh 'docker push ${BUILDREGISTRY}/billing-portal/logstash:1.0.$BUILD_NUMBER'
       }
    }
    stage('Setup Deployment Package') {
@@ -49,6 +53,7 @@ node {
         sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER'
         sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER'
         sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/api:1.0.$BUILD_NUMBER'
+        sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/logstash:1.0.$BUILD_NUMBER'
       }
    }
 }

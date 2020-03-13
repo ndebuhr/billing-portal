@@ -62,6 +62,58 @@ spec:
         restartPolicy: Always
         deploymentName: api
         replicasCount: "1"
+      - name: logstash-service
+        type: k8s.ServiceSpec
+        serviceName: logstash
+        serviceType: ClusterIP
+        selectors:
+          application: logstash
+        ports:
+        - name: syslog
+          type: k8s.ServicePortSpec
+          portName: syslog
+          port: "1514"
+        - name: api
+          type: k8s.ServicePortSpec
+          portName: api
+          port: "9600"
+      - name: logstash-pods
+        type: k8s.DeploymentSpec
+        containers:
+        - name: logstash
+          type: k8s.ContainerSpec
+          containerName: logstash
+          image: !format "%DEPLOYMENTREGISTRY%/billing-portal/logstash:1.0.%BUILD_NUMBER%"
+        podCreateDeleteRetryCount: "20"
+        labels:
+          application: logstash
+        restartPolicy: Always
+        deploymentName: logstash
+        replicasCount: "1"
+      - name: haproxy-service
+        type: k8s.ServiceSpec
+        serviceName: billing-portal
+        serviceType: ClusterIP
+        selectors:
+          application: haproxy
+        ports:
+        - name: http
+          type: k8s.ServicePortSpec
+          portName: http
+          port: "80"
+      - name: haproxy-pods
+        type: k8s.DeploymentSpec
+        containers:
+        - name: haproxy
+          type: k8s.ContainerSpec
+          containerName: haproxy
+          image: !format "%DEPLOYMENTREGISTRY%/billing-portal/haproxy:1.0.%BUILD_NUMBER%"
+        podCreateDeleteRetryCount: "20"
+        labels:
+          application: haproxy
+        restartPolicy: Always
+        deploymentName: haproxy
+        replicasCount: "1"
       - name: jboss-payments-module
         type: jbossdm.War
         contextRoot: "{{ CONTEXT_ROOT }}"
