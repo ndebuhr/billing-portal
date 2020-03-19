@@ -134,3 +134,28 @@ spec:
       - name: database-update-scripts
         type: sql.SqlScripts
         file: !file "sql/sql-scripts.zip"
+---
+apiVersion: xl-deploy/v1
+kind: Applications
+spec:
+- directory: Applications/PortfolioA35
+  children:
+  - name: BillingPortal-BlueGreen
+    type: udm.Application
+    lastVersion: !format 1.0.%BUILD_NUMBER%
+    children:
+    - name: !format 1.0.%BUILD_NUMBER%
+      type: udm.DeploymentPackage
+      deployables:
+      - name: load-balancer-service
+        type: k8s.ServiceSpec
+        serviceName: billing-portal-loadbalancer
+        serviceType: ClusterIP
+        selectors:
+          application: "{{ ACTIVE_ENVIRONMENT }}"
+        ports:
+        - name: http
+          type: k8s.ServicePortSpec
+          portName: http
+          port: "8082"
+          targetPort: "80"
