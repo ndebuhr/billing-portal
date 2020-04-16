@@ -1,5 +1,5 @@
 # Billing Portal
 
-Architecture
+Architecture diagram
 
 ![billing-portal](images/billing-portal.jpg)
