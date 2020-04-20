@@ -19,8 +19,8 @@ node {
         dir("api") {
           sh "docker build --no-cache -t ${BUILDREGISTRY}/billing-portal/api:1.0.$BUILD_NUMBER ."
         }
-        dir("logstash") {
-          sh "docker build --no-cache -t ${BUILDREGISTRY}/billing-portal/logstash:1.0.$BUILD_NUMBER ."
+        dir("scanner") {
+          sh 'docker build --no-cache -t sonar-scanner:latest .'
         }
       }
    }
@@ -29,7 +29,7 @@ node {
    }
    stage('Scan Artifacts') {
       withEnv(["DOCKER_HOST=${DOCKERHOST}"]) {
-        sh 'docker run --rm -t -v $PWD/billing-service:/usr/src newtmitch/sonar-scanner:4.0 -Dsonar.projectKey=billing-service -Dsonar.host.url=${SONARHOST} -Dsonar.login=${SONARTOKEN}'
+        sh 'docker run --rm -t sonar-scanner -Dsonar.projectKey=billing-service -Dsonar.host.url=${SONARHOST} -Dsonar.login=${SONARTOKEN}'
       }
    }
    stage('Push') {
@@ -38,7 +38,6 @@ node {
         sh 'docker push ${BUILDREGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER'
         sh 'docker push ${BUILDREGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER'
         sh 'docker push ${BUILDREGISTRY}/billing-portal/api:1.0.$BUILD_NUMBER'
-        sh 'docker push ${BUILDREGISTRY}/billing-portal/logstash:1.0.$BUILD_NUMBER'
       }
    }
    stage('Setup Deployment Package') {
@@ -53,7 +52,7 @@ node {
         sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/haproxy:1.0.$BUILD_NUMBER'
         sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/static-site:1.0.$BUILD_NUMBER'
         sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/api:1.0.$BUILD_NUMBER'
-        sh 'docker rmi -f ${BUILDREGISTRY}/billing-portal/logstash:1.0.$BUILD_NUMBER'
+        sh 'docker rmi -f sonar-scanner:latest'
       }
    }
 }
