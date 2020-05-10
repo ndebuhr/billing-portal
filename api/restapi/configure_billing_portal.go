@@ -32,7 +32,7 @@ func configureAPI(api *operations.BillingPortalAPI) http.Handler {
 	api.AddExpenseHandler = operations.AddExpenseHandlerFunc(func(params operations.AddExpenseParams) middleware.Responder {
 		db := getMongoClient()
 		expense := params.Expense
-		collection := db.Database("xebialabs").Collection("expenses")
+		collection := db.Database("digitalai").Collection("expenses")
 		_, err := collection.InsertOne(context.TODO(), expense)
 		if err != nil {
 			log.Printf("failed mongodb insert operation: %v", err)
@@ -45,7 +45,7 @@ func configureAPI(api *operations.BillingPortalAPI) http.Handler {
 		db := getMongoClient()
 		findOptions := options.Find()
 		findOptions.SetLimit(*params.Size)
-		collection := db.Database("xebialabs").Collection("expenses")
+		collection := db.Database("digitalai").Collection("expenses")
 		cur, err := collection.Find(context.TODO(), bson.D{{}}, findOptions)
 		if err != nil {
 			log.Printf("failed mongodb find operation: %v", err)
@@ -99,7 +99,7 @@ func setupGlobalMiddleware(handler http.Handler) http.Handler {
 
 func getMongoClient() *mongo.Client {
 	dbOptions := options.Client().ApplyURI(
-		"mongodb://xebialabs:xebialabs@mongodb:27017",
+		"mongodb://digitalai:digitalai@mongodb:27017",
 	)
 	db, err := mongo.Connect(context.TODO(), dbOptions)
 	if err != nil {
