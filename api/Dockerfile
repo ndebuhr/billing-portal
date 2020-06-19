@@ -1,4 +1,4 @@
-FROM quay.io/goswagger/swagger:v0.22.0 AS generate
+FROM quay.io/goswagger/swagger:v0.24.0 AS generate
 
 ENV GOPATH /go
 COPY . /go/src/github.com/ndebuhr/billing-service/api

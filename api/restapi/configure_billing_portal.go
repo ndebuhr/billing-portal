@@ -32,7 +32,7 @@ func configureAPI(api *operations.BillingPortalAPI) http.Handler {
 	api.AddExpenseHandler = operations.AddExpenseHandlerFunc(func(params operations.AddExpenseParams) middleware.Responder {
 		db := getMongoClient()
 		expense := params.Expense
-		collection := db.Database("xebialabs").Collection("expenses")
+		collection := db.Database("digitalai").Collection("expenses")
 		_, err := collection.InsertOne(context.TODO(), expense)
 		if err != nil {
 			log.Printf("failed mongodb insert operation: %v", err)
@@ -45,7 +45,7 @@ func configureAPI(api *operations.BillingPortalAPI) http.Handler {
 		db := getMongoClient()
 		findOptions := options.Find()
 		findOptions.SetLimit(*params.Size)
-		collection := db.Database("xebialabs").Collection("expenses")
+		collection := db.Database("digitalai").Collection("expenses")
 		cur, err := collection.Find(context.TODO(), bson.D{{}}, findOptions)
 		if err != nil {
 			log.Printf("failed mongodb find operation: %v", err)
@@ -66,8 +66,12 @@ func configureAPI(api *operations.BillingPortalAPI) http.Handler {
 		return operations.NewGetExpensesOK().WithPayload(payload)
 	})
 
+	// PreServerShutdown is called before the HTTP(S) server is shutdown
+	// This allows for custom functions to get executed before the HTTP(S) server stops accepting traffic
 	api.PreServerShutdown = func() {}
 
+	// ServerShutdown is called when the HTTP(S) server is shut down and done
+	// handling all active connections and does not accept connections any more
 	api.ServerShutdown = func() {}
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
@@ -82,8 +86,7 @@ func configureTLS(tlsConfig *tls.Config) {
 // If you need to modify a config, store server instance to stop it individually later, this is the place.
 // This function can be called multiple times, depending on the number of serving schemes.
 // scheme value will be set accordingly: "http", "https" or "unix"
-func configureServer(s *http.Server, scheme, addr string) {
-}
+func configureServer(s *http.Server, scheme, addr string) {}
 
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.
 // The middleware executes after routing but before authentication, binding and validation
@@ -99,7 +102,7 @@ func setupGlobalMiddleware(handler http.Handler) http.Handler {
 
 func getMongoClient() *mongo.Client {
 	dbOptions := options.Client().ApplyURI(
-		"mongodb://xebialabs:xebialabs@mongodb:27017",
+		"mongodb://digitalai:digitalai@mongodb:27017",
 	)
 	db, err := mongo.Connect(context.TODO(), dbOptions)
 	if err != nil {

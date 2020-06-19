@@ -19,9 +19,7 @@ node {
         dir("api") {
           sh "docker build --no-cache -t ${BUILDREGISTRY}/billing-portal/api:1.0.$BUILD_NUMBER ."
         }
-        dir("scanner") {
-          sh 'docker build --no-cache -t sonar-scanner:latest .'
-        }
+        sh 'docker build --no-cache -f scanner/Dockerfile -t sonar-scanner:latest .'
       }
    }
    stage('Zip DB Scripts') {
