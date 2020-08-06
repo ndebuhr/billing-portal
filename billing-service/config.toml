@@ -6,7 +6,7 @@ paginate = 4
 
 [params]
     custom_css = ["css/styles.css"]
-    designed_by = "Example"
+    designed_by = "Neal DeBuhr"
     copyright = "digital.ai"
     footer_content = "Powered by the Digital.ai Platform"
     headline = "Digital.ai Billing Service"
