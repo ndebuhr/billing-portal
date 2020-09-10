@@ -1,0 +1,46 @@
+image: "ubuntu:18.04"
+
+stages:
+  - build
+  - scan
+  - push
+
+before_script:
+- git checkout ${BRANCH}
+- git submodule update --init --recursive
+
+build:
+  stage: build
+  script:
+    - cd payments/payment-cdi-event
+    - mvn clean install
+    - cd ../../haproxy
+    - docker build --no-cache -t $BUILDREGISTRY/billing-portal/haproxy:1.0.$CI_PIPELINE_ID .
+    - cd ../billing-service
+    - docker build --no-cache -t $BUILDREGISTRY/billing-portal/static-site:1.0.$CI_PIPELINE_ID .
+    - cd ../api
+    - docker build --no-cache -t $BUILDREGISTRY/billing-portal/api:1.0.$CI_PIPELINE_ID .
+    - cd ../
+    - docker build --no-cache -f scanner/Dockerfile -t sonar-scanner:latest .
+    - cd sql/
+    - zip sql-scripts.zip *
+    - cd ..
+    - chmod +x ./xlw
+    - ./xlw apply -v --values BUILD_NUMBER=$CI_PIPELINE_ID,DEPLOYMENTREGISTRY=$DEPLOYMENTREGISTRY --xl-deploy-url $XLDHOST --xl-deploy-username $XLDUSER --xl-deploy-password $XLDPASSWORD -f xl-deploy-billing-service.yaml
+
+scan:
+  stage: scan
+  script:
+    - docker run --rm -t sonar-scanner -Dsonar.projectKey=billing-service -Dsonar.host.url=$SONARHOST -Dsonar.login=$SONARTOKEN
+
+push:
+  stage: push
+  script:
+    - echo "$DOCKERPASSWORD" | docker login -u $DOCKERUSER --password-stdin https://$BUILDREGISTRY
+    - docker push $BUILDREGISTRY/billing-portal/haproxy:1.0.$CI_PIPELINE_ID
+    - docker push $BUILDREGISTRY/billing-portal/static-site:1.0.$CI_PIPELINE_ID
+    - docker push $BUILDREGISTRY/billing-portal/api:1.0.$CI_PIPELINE_ID
+    - docker rmi -f $BUILDREGISTRY/billing-portal/haproxy:1.0.$CI_PIPELINE_ID
+    - docker rmi -f $BUILDREGISTRY/billing-portal/static-site:1.0.$CI_PIPELINE_ID
+    - docker rmi -f $BUILDREGISTRY/billing-portal/api:1.0.$CI_PIPELINE_ID
+    - docker rmi -f sonar-scanner:latest
