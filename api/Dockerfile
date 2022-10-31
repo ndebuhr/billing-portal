@@ -7,7 +7,7 @@ RUN go mod init github.com/ndebuhr/billing-service && \
     swagger generate server -f swagger.yml && \
     go get -v -d ./...
 
-FROM golang:1.13 as build
+FROM golang:1.18 as build
 
 ENV GOPATH /go
 RUN rm -rf /go
